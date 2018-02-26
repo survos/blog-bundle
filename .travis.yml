@@ -20,7 +20,7 @@ jobs:
       before_script:
         - mkdir ./tests/app/var/db-dumps
         - composer install --no-interaction
-        - docker-compose -f support/ci/docker-compose.yml --project-directory=. up --build -d
+        - composer run start
         # Even after mysql fully started (it can be pinged by 'mysqladmin ping'),
         # there is still some time during which mysql for some reason is inaccessible by PDO.
         # Following workaround fixes that
@@ -28,6 +28,6 @@ jobs:
           while ! docker exec -it blogbundle_app php -r "new PDO('mysql:host=mysql', 'root', '1111');" ; do
             sleep 1;
           done
-        - docker exec -it blogbundle_app /app/tests/app/bin/install
+        - composer run build
       script:
-        - docker exec -it blogbundle_app /app/vendor/bin/behat -c /app/behat.yml.dist
+        - composer run tests
